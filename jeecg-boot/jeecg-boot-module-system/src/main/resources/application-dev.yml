@@ -173,3 +173,10 @@ logging:
 #cas单点登录
 cas:
   prefixUrl: http://cas.example.org:8443/cas
+
+
+qiniu:
+  accessKey: 8QY_QmT3GahZlU578HfIJykEXmIKFlrUyR158djL
+  bucket: hrcxloanspmkt
+  path: http://qny.hrcx.top/
+  secretKey: yYIWI42uvUaQssE2-8ftDpvVGVWrR-JJm06FFeRu

@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.util.ConstantQiniu;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.FileCopyUtils;
@@ -43,6 +45,9 @@ public class CommonController {
 	@Value(value = "${jeecg.path.upload}")
 	private String uploadpath;
 
+	@Autowired
+	private ConstantQiniu constantQiniu;
+
 	/**
 	 * @Author 政辉
 	 * @return
@@ -66,18 +71,22 @@ public class CommonController {
 			}
 			MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
 			MultipartFile mf = multipartRequest.getFile("file");// 获取上传文件对象
-			String orgName = mf.getOriginalFilename();// 获取文件名
-			fileName = orgName.substring(0, orgName.lastIndexOf(".")) + "_" + System.currentTimeMillis() + orgName.substring(orgName.indexOf("."));
-			String savePath = file.getPath() + File.separator + fileName;
-			File savefile = new File(savePath);
-			FileCopyUtils.copy(mf.getBytes(), savefile);
-			String dbpath = bizPath + File.separator + nowday + File.separator + fileName;
-			if (dbpath.contains("\\")) {
-				dbpath = dbpath.replace("\\", "/");
-			}
-			result.setMessage(dbpath);
-			result.setSuccess(true);
-		} catch (IOException e) {
+			//修改后的七牛云上传
+			result = constantQiniu.uploadQNImg(mf,result);
+//
+//          原来的本地上传  页面上的图片显示路径还没做修改
+//			String orgName = mf.getOriginalFilename();// 获取文件名
+//			fileName = orgName.substring(0, orgName.lastIndexOf(".")) + "_" + System.currentTimeMillis() + orgName.substring(orgName.indexOf("."));
+//			String savePath = file.getPath() + File.separator + fileName;
+//			File savefile = new File(savePath);
+//			FileCopyUtils.copy(mf.getBytes(), savefile);
+//			String dbpath = bizPath + File.separator + nowday + File.separator + fileName;
+//			if (dbpath.contains("\\")) {
+//				dbpath = dbpath.replace("\\", "/");
+//			}
+//			result.setMessage(dbpath);
+//			result.setSuccess(true);
+		} catch (Exception e) {
 			result.setSuccess(false);
 			result.setMessage(e.getMessage());
 			log.error(e.getMessage(), e);
